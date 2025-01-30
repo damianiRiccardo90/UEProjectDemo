@@ -27,7 +27,7 @@ AUEProjectCharacter::AUEProjectCharacter()
 	, LookAction(nullptr)
 	, BaseAttributeSet(nullptr)
 #if WITH_EDITORONLY_DATA
-	, PreviewStaticMesh(nullptr)
+	, PreviewPose(nullptr)
 #endif
 {
 	// Set size for collision capsule
@@ -86,9 +86,9 @@ UUEProjectAttributeSet_CharacterBase* AUEProjectCharacter::GetBaseAttributeSet()
 }
 
 #if WITH_EDITORONLY_DATA
-UStaticMesh* AUEProjectCharacter::GetPreviewStaticMesh() const
+UStaticMesh* AUEProjectCharacter::GetPreviewPose() const
 {
-	return PreviewStaticMesh;
+	return PreviewPose;
 }
 #endif
 

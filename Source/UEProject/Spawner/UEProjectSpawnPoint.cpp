@@ -99,7 +99,7 @@ void AUEProjectSpawnPoint::UpdatePreviewMesh()
         if (const AUEProjectCharacter* const DefaultCharacter =
             CharacterClass->GetDefaultObject<AUEProjectCharacter>())
         {
-            if (UStaticMesh* const CharacterPreviewMesh = DefaultCharacter->GetPreviewStaticMesh())
+            if (UStaticMesh* const CharacterPreviewMesh = DefaultCharacter->GetPreviewPose())
             {
                 if (PreviewMeshComponent)
                 {

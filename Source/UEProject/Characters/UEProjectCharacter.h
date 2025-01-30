@@ -33,7 +33,7 @@ public:
 	UAbilitySystemComponent* GetAbilitySystem() const;
     UUEProjectAttributeSet_CharacterBase* GetBaseAttributeSet() const;
 #if WITH_EDITORONLY_DATA
-    UStaticMesh* GetPreviewStaticMesh() const;
+    UStaticMesh* GetPreviewPose() const;
 #endif
 
 protected:
@@ -76,6 +76,6 @@ protected:
 
 #if WITH_EDITORONLY_DATA
     UPROPERTY(EditDefaultsOnly, Category = "Preview")
-    UStaticMesh* PreviewStaticMesh;
+    UStaticMesh* PreviewPose;
 #endif
 };
