@@ -1,0 +1,30 @@
+# Ignore specific Unreal Engine generated files and folders
+/Binaries/
+/Build/
+/DerivedDataCache/
+/Intermediate/
+/Saved/
+/.vs/
+/.vscode/
+*.sln
+*.suo
+*.user
+*.opendb
+*.db
+*.log
+*.tmp
+*.bak
+*.idea
+*.DS_Store
+Thumbs.db
+
+# Ignore specific files in the Source folder (if needed)
+/Source/**/*.log
+/Source/**/*.tmp
+/Source/**/*.bak
+
+# Ignore everything except the Source folder, .uproject and .gitignore
+/*
+!/Source/
+!*.uproject
+!.gitignore
