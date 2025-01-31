@@ -6,7 +6,7 @@
 UUEProjectAttributeSet_CharacterBase::UUEProjectAttributeSet_CharacterBase()
 {
     // Initialize Health via the macro-generated InitHealth function.
-    InitHealth(100.0f);
+    InitHealth(100.f);
 }
 
 void UUEProjectAttributeSet_CharacterBase::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -16,7 +16,7 @@ void UUEProjectAttributeSet_CharacterBase::PreAttributeChange(const FGameplayAtt
     // Keep Health above 0 before the change is finalized
     if (Attribute == GetHealthAttribute())
     {
-        NewValue = FMath::Max(NewValue, 0.0f);
+        NewValue = FMath::Max(NewValue, 0.f);
     }
 }
 
@@ -28,7 +28,7 @@ void UUEProjectAttributeSet_CharacterBase::PostGameplayEffectExecute(const FGame
     if (Data.EvaluatedData.Attribute == GetHealthAttribute())
     {
         // Ensure it doesn't go below 0
-        const float NewHealth = FMath::Max(GetHealth(), 0.0f);
+        const float NewHealth = FMath::Max(GetHealth(), 0.f);
         SetHealth(NewHealth);
 
         // TODO: If Health hits 0, handle “death” or other logic here.

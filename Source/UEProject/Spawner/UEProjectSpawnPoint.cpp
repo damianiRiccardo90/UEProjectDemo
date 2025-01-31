@@ -25,7 +25,7 @@ AUEProjectSpawnPoint::AUEProjectSpawnPoint() :
     ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
     RootComponent = ArrowComponent;
     ArrowComponent->SetArrowColor(FColor::Green);
-    ArrowComponent->SetArrowLength(100.0f);
+    ArrowComponent->SetArrowLength(100.f);
     // Hide the arrow at runtime, but keep it visible in the editor
     ArrowComponent->SetHiddenInGame(true, true);
 
