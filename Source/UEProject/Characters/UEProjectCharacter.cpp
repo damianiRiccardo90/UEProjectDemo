@@ -85,7 +85,7 @@ UUEProjectAttributeSet_CharacterBase* AUEProjectCharacter::GetBaseAttributeSet()
 	return BaseAttributeSet;
 }
 
-#if WITH_EDITORONLY_DATA
+#if WITH_EDITOR
 UStaticMesh* AUEProjectCharacter::GetPreviewPose() const
 {
 	return PreviewPose;
@@ -134,36 +134,24 @@ void AUEProjectCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AUEProjectCharacter::Move(const FInputActionValue& Value)
 {
-	// input is a Vector2D
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (!Controller)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+	if (!Controller) return;
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
-	}
+	// Add movement 
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	AddMovementInput(RightDirection, MovementVector.X);
 }
 
 void AUEProjectCharacter::Look(const FInputActionValue& Value)
 {
-	// input is a Vector2D
 	const FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (!Controller)
-	{
-		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
-	}
+	// Add yaw and pitch input to controller
+	AddControllerYawInput(LookAxisVector.X);
+	AddControllerPitchInput(LookAxisVector.Y);
 }

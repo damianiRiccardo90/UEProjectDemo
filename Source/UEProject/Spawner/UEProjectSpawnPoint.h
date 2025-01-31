@@ -28,7 +28,7 @@ public:
 
 protected:
 
-#if WITH_EDITORONLY_DATA
+#if WITH_EDITOR
 
 	//////////////////////////////////////////////////////////////////////////
     // UObject overrides
@@ -52,20 +52,6 @@ protected:
     // Check for collisions and update the material
     void UpdateMaterialBasedOnCollision();
 
-	UPROPERTY()
-	UBillboardComponent* IconBillboard;
-
-    UPROPERTY()
-    UStaticMeshComponent* PreviewMeshComponent;
-
-	/** Material applied to the preview mesh, used when spawn point is correctly placed. */
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Spawn")
-	UMaterialInterface* CorrectPlacementMaterial;
-
-	/** Material applied to the preview mesh, used when spawn point is colliding with something. */
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Spawn")
-	UMaterialInterface* WrongPlacementMaterial;
-
 #endif
 
 	/** The arrow component to indicate the spawn direction. */
@@ -80,4 +66,22 @@ protected:
     UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Spawn", 
 			  meta = (DisplayName = "Is Enabled"))
     bool bIsEnabled = true;
+
+#if WITH_EDITORONLY_DATA
+
+	UPROPERTY()
+	UBillboardComponent* IconBillboard;
+
+    UPROPERTY()
+    UStaticMeshComponent* PreviewMeshComponent;
+
+	/** Material applied to the preview mesh, used when spawn point is correctly placed. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawn")
+	UMaterialInterface* CorrectPlacementMaterial;
+
+	/** Material applied to the preview mesh, used when spawn point is colliding with something. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawn")
+	UMaterialInterface* WrongPlacementMaterial;
+
+#endif
 };

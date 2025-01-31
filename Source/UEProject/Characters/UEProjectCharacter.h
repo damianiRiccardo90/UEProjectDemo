@@ -32,7 +32,7 @@ public:
 	UGameplayCameraComponent* GetGameplayCamera() const;
 	UAbilitySystemComponent* GetAbilitySystem() const;
     UUEProjectAttributeSet_CharacterBase* GetBaseAttributeSet() const;
-#if WITH_EDITORONLY_DATA
+#if WITH_EDITOR
     UStaticMesh* GetPreviewPose() const;
 #endif
 
@@ -75,7 +75,7 @@ protected:
     UUEProjectAttributeSet_CharacterBase* BaseAttributeSet;
 
 #if WITH_EDITORONLY_DATA
-    UPROPERTY(EditDefaultsOnly, Category = "Preview")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mesh")
     UStaticMesh* PreviewPose;
 #endif
 };

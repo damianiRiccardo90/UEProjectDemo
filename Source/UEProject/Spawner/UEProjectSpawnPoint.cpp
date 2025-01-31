@@ -2,31 +2,37 @@
 
 #include <Components/ArrowComponent.h>
 #include <Components/BillboardComponent.h>
+#include <Components/CapsuleComponent.h>
 #include <Engine/OverlapResult.h>
 #include <Engine/Texture2D.h>
 
 
 AUEProjectSpawnPoint::AUEProjectSpawnPoint() :
+    ArrowComponent(nullptr),
+	CharacterClass(nullptr),
+    bIsEnabled(true),
 #if WITH_EDITORONLY_DATA
     IconBillboard(nullptr),
     PreviewMeshComponent(nullptr),
     CorrectPlacementMaterial(nullptr),
-    WrongPlacementMaterial(nullptr),
+    WrongPlacementMaterial(nullptr)
 #endif
-    ArrowComponent(nullptr),
-	CharacterClass(nullptr),
-    bIsEnabled(true)
 {
-	// Enable ticking if needed
-	PrimaryActorTick.bCanEverTick = false;
+    // Allow ticking if needed (off by default)
+    PrimaryActorTick.bCanEverTick = false;
 
-#if !WITH_EDITOR
-    // If we're NOT in the editor, use a plain SceneComponent as root
-    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-#else
-    // If we're in the editor, use a BillboardComponent as root to show an icon
+    // Create and configure an arrow component to indicate the spawn transform
+    ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
+    RootComponent = ArrowComponent;
+    ArrowComponent->SetArrowColor(FColor::Green);
+    ArrowComponent->SetArrowLength(100.0f);
+    // Hide the arrow at runtime, but keep it visible in the editor
+    ArrowComponent->SetHiddenInGame(true, true);
+
+#if WITH_EDITOR
+    // Create the Billboard icon and attach it to the arrow
     IconBillboard = CreateDefaultSubobject<UBillboardComponent>(TEXT("SpawnPointIcon"));
-    RootComponent = IconBillboard;
+    IconBillboard->SetupAttachment(ArrowComponent);
 
     static ConstructorHelpers::FObjectFinder<UTexture2D> IconFinder(
         TEXT("/Engine/EditorResources/S_PlaceActor.S_PlaceActor")
@@ -38,17 +44,10 @@ AUEProjectSpawnPoint::AUEProjectSpawnPoint() :
 
     // Create and configure the preview mesh component
     PreviewMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PreviewMeshComponent"));
-    PreviewMeshComponent->SetupAttachment(RootComponent);
+    PreviewMeshComponent->SetupAttachment(ArrowComponent);
     PreviewMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     PreviewMeshComponent->SetVisibility(false); // Initially hidden
 #endif
-
-    // Create and configure an arrow component to indicate the spawn direction
-    ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
-    ArrowComponent->SetupAttachment(RootComponent);
-    ArrowComponent->SetArrowColor(FColor::Green);
-    ArrowComponent->SetArrowLength(100.0f);
-    ArrowComponent->SetHiddenInGame(false); // Ensure the arrow is visible only in the editor
 }
 
 void AUEProjectSpawnPoint::SpawnCharacter()
@@ -56,8 +55,7 @@ void AUEProjectSpawnPoint::SpawnCharacter()
     if (!bIsEnabled) return;
 
     // Get the spawn transform from the arrow component
-    const FVector SpawnLocation = GetActorLocation();
-    const FRotator SpawnRotation = ArrowComponent->GetComponentRotation();
+    const FTransform SpawnTransform = ArrowComponent->GetComponentTransform();
 
     // Define spawn parameters
     FActorSpawnParameters SpawnParams;
@@ -67,11 +65,10 @@ void AUEProjectSpawnPoint::SpawnCharacter()
         ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
     // Spawn the character
-    GetWorld()->SpawnActor<ACharacter>(CharacterClass, SpawnLocation, 
-                                       SpawnRotation, SpawnParams);
+    GetWorld()->SpawnActor<ACharacter>(CharacterClass, SpawnTransform, SpawnParams);
 }
 
-#if WITH_EDITORONLY_DATA
+#if WITH_EDITOR
 void AUEProjectSpawnPoint::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
     Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -81,6 +78,9 @@ void AUEProjectSpawnPoint::PostEditChangeProperty(FPropertyChangedEvent& Propert
             GET_MEMBER_NAME_CHECKED(AUEProjectSpawnPoint, CharacterClass))
     {
         UpdatePreviewMesh();
+
+        // Update the material based on collision after altering the character class
+        UpdateMaterialBasedOnCollision();
     }
 }
 
@@ -94,17 +94,33 @@ void AUEProjectSpawnPoint::PostEditMove(bool bFinished)
 
 void AUEProjectSpawnPoint::UpdatePreviewMesh()
 {
+    if (!PreviewMeshComponent) return;
+
     if (CharacterClass)
     {
         if (const AUEProjectCharacter* const DefaultCharacter =
-            CharacterClass->GetDefaultObject<AUEProjectCharacter>())
+                CharacterClass->GetDefaultObject<AUEProjectCharacter>())
         {
             if (UStaticMesh* const CharacterPreviewMesh = DefaultCharacter->GetPreviewPose())
             {
-                if (PreviewMeshComponent)
+                // Assign the mesh
+                PreviewMeshComponent->SetStaticMesh(CharacterPreviewMesh);
+
+                // Match the preview mesh's relative transform (to the direction arrow) 
+                // to the character's skeletal mesh component (to the parent character position), 
+                // so that the preview mesh is visually aligned with the arrow
+                if (const USkeletalMeshComponent* const CharSkeletalMeshComponent = 
+                        DefaultCharacter->GetMesh())
                 {
-                    PreviewMeshComponent->SetStaticMesh(CharacterPreviewMesh);
-                    PreviewMeshComponent->SetVisibility(true);
+                    PreviewMeshComponent->SetRelativeTransform(
+                        CharSkeletalMeshComponent->GetRelativeTransform());
+                }
+
+                // Show the preview mesh, hide the icon
+                PreviewMeshComponent->SetVisibility(true);
+                if (IconBillboard)
+                {
+                    IconBillboard->SetVisibility(false);
                 }
             }
         }
@@ -113,39 +129,41 @@ void AUEProjectSpawnPoint::UpdatePreviewMesh()
     {
         // Hide the preview mesh if CharacterClass is null
         PreviewMeshComponent->SetVisibility(false);
+        // Show the icon again
+        if (IconBillboard)
+        {
+            IconBillboard->SetVisibility(true);
+        }
     }
 }
 
 void AUEProjectSpawnPoint::UpdateMaterialBasedOnCollision()
 {
-    if (!PreviewMeshComponent || !CorrectPlacementMaterial || !WrongPlacementMaterial)
+    if (!PreviewMeshComponent || !CorrectPlacementMaterial || 
+        !WrongPlacementMaterial || !CharacterClass)
     {
         return;
     }
 
-    // Check if the preview mesh is colliding with anything
-    TArray<FOverlapResult> Overlaps;
-    FCollisionQueryParams CollisionParams;
-    CollisionParams.bTraceComplex = true;
-    CollisionParams.AddIgnoredActor(this);
+    // Get the capsule from the default character
+    const UCapsuleComponent* const DefaultCapsule = 
+        CharacterClass->GetDefaultObject<AUEProjectCharacter>()->GetCapsuleComponent();
 
+    // Simple overlap test using character's capsule dimensions at the spawn point location
+    TArray<FOverlapResult> Overlaps;
     const bool bIsColliding = GetWorld()->OverlapMultiByChannel(
         Overlaps,
-        PreviewMeshComponent->GetComponentLocation(),
-        PreviewMeshComponent->GetComponentQuat(),
+        GetActorLocation(),  // Where the character will spawn
+        GetActorRotation().Quaternion(),  // How it will be oriented
         ECC_WorldStatic,
-        FCollisionShape::MakeBox(PreviewMeshComponent->Bounds.BoxExtent),
-        CollisionParams
+        FCollisionShape::MakeCapsule(
+            DefaultCapsule->GetScaledCapsuleRadius(),
+            DefaultCapsule->GetScaledCapsuleHalfHeight()
+        ),
+        FCollisionQueryParams(NAME_None, false, this)
     );
 
-    // Apply the appropriate material based on collision
-    if (bIsColliding)
-    {
-        PreviewMeshComponent->SetMaterial(0, WrongPlacementMaterial);
-    }
-    else
-    {
-        PreviewMeshComponent->SetMaterial(0, CorrectPlacementMaterial);
-    }
+    PreviewMeshComponent->SetMaterial(
+        0, bIsColliding ? WrongPlacementMaterial : CorrectPlacementMaterial);
 }
 #endif
