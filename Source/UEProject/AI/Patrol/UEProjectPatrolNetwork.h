@@ -32,7 +32,7 @@ public:
      * @return Whether the returned point is valid.
      */
     UFUNCTION(BlueprintCallable, Category = "Patrol")
-    bool GetNextPatrolPoint(int32 InCurrentIndex, FVector& OutNextPoint) const;
+    bool GetNextPatrolPoint(int32 InCurrentIndex, FVector& OutNextPoint);
     
     /**
      * Calculate next point index based on patrol configuration.
@@ -42,7 +42,7 @@ public:
      * @return Next point index or INDEX_NONE if invalid.
      */
     UFUNCTION(BlueprintCallable, Category = "Patrol")
-    int32 GetNextPointIndex(int32 CurrentIndex, bool bRandom = false) const;
+    int32 GetNextPointIndex(int32 CurrentIndex, bool bRandom = false);
     
     /**
      * Get world location of point at given index.

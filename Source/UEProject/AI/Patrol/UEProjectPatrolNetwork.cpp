@@ -16,7 +16,7 @@ AUEProjectPatrolNetwork::AUEProjectPatrolNetwork()
     RootComponent = PatrolPath;
 }
 
-bool AUEProjectPatrolNetwork::GetNextPatrolPoint(int32 InCurrentIndex, FVector& OutNextPoint) const
+bool AUEProjectPatrolNetwork::GetNextPatrolPoint(int32 InCurrentIndex, FVector& OutNextPoint)
 {
     const bool bIsValidIndex = IsValidPointIndex(InCurrentIndex);
 
@@ -29,7 +29,7 @@ bool AUEProjectPatrolNetwork::GetNextPatrolPoint(int32 InCurrentIndex, FVector& 
     return bIsValidIndex;
 }
 
-int32 AUEProjectPatrolNetwork::GetNextPointIndex(int32 CurrentIndex, bool bRandom /*= false*/) const
+int32 AUEProjectPatrolNetwork::GetNextPointIndex(int32 CurrentIndex, bool bRandom /*= false*/)
 {
     const int32 NumPoints = GetNumPoints();
     if (NumPoints == 0) return INDEX_NONE;
