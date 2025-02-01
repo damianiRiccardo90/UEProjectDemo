@@ -10,15 +10,18 @@ public class UEProject : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] 
 		{
-			"Core",
+            "AIModule",
+            "Core",
 			"CoreUObject",
 			"Engine",
             "EnhancedInput",
             "InputCore",
             "GameplayAbilities",
             "GameplayCameras",
+            "GameplayStateTreeModule",
             "GameplayTags",
-            "GameplayTasks"
-		});
+            "GameplayTasks",
+            "StateTreeModule"
+        });
     }
 }
