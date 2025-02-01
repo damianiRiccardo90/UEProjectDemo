@@ -34,9 +34,10 @@ struct FUEProjectSTInstanceData_RunBehaviorTree
 };
 
 /**
- * This task runs an a behavior tree.
+ * This task runs an a behavior tree, supports looping and also input parameters 
+ * that will be stored on the blackboard.
  */
-USTRUCT(meta = (DisplayName = "Run EQS Query", Category = "AI|Tasks|EQS"))
+USTRUCT(meta = (DisplayName = "Run Behavior Tree", Category = "AI|BehaviorTree"))
 struct FUEProjectSTTask_RunBehaviorTree : public FStateTreeAITaskBase
 {
 	GENERATED_BODY()

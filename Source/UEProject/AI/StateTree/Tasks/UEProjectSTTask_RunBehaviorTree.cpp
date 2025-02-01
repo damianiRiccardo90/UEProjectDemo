@@ -5,7 +5,6 @@
 #include <BehaviorTree/BehaviorTreeTypes.h>
 #include <BehaviorTree/BlackboardComponent.h>
 #include <StateTreeExecutionContext.h>
-#include <VisualLogger/VisualLogger.h>
 
 
 const UStruct* FUEProjectSTTask_RunBehaviorTree::GetInstanceDataType() const
@@ -18,27 +17,14 @@ EStateTreeRunStatus FUEProjectSTTask_RunBehaviorTree::EnterState(
 {
 	FInstanceDataType& InstanceData = Context.GetInstanceData(*this);
 
-	if (!InstanceData.AIController)
-	{
-		UE_VLOG(Context.GetOwner(), LogStateTree, Error, 
-			TEXT("AIController parameter is missing."));
-		return EStateTreeRunStatus::Failed;
-	}
-	if (!InstanceData.BehaviorTree)
-	{
-		UE_VLOG(Context.GetOwner(), LogStateTree, Error, 
-			TEXT("BehaviorTree parameter is missing."));
-		return EStateTreeRunStatus::Failed;
-	}
+    if (!InstanceData.AIController || !InstanceData.BehaviorTree)
+    {
+        return EStateTreeRunStatus::Failed;
+    }
 
 	UBehaviorTreeComponent* const BehaviorTreeComponent = 
 		Cast<UBehaviorTreeComponent>(InstanceData.AIController->GetBrainComponent());
-	if (!BehaviorTreeComponent)
-	{
-		UE_VLOG(Context.GetOwner(), LogStateTree, Error, 
-			TEXT("Unable to retrieve BehaviorTreeComponent from AIController."));
-		return EStateTreeRunStatus::Failed;
-	}
+	if (!BehaviorTreeComponent) return EStateTreeRunStatus::Failed;
 
 	UBlackboardComponent* const BlackboardComponent = 
 		BehaviorTreeComponent->GetBlackboardComponent();
@@ -60,17 +46,9 @@ EStateTreeRunStatus FUEProjectSTTask_RunBehaviorTree::Tick(
 
     UBehaviorTreeComponent* const BehaviorTreeComponent = 
 		Cast<UBehaviorTreeComponent>(InstanceData.AIController->GetBrainComponent());
-	if (!BehaviorTreeComponent)
-	{
-		UE_VLOG(Context.GetOwner(), LogStateTree, Error, 
-			TEXT("Unable to retrieve BehaviorTreeComponent from AIController."));
-		return EStateTreeRunStatus::Failed;
-	}
+	if (!BehaviorTreeComponent) return EStateTreeRunStatus::Failed;
 
-    if (!BehaviorTreeComponent->IsRunning())
-    {
-        return EStateTreeRunStatus::Succeeded;
-    }
+    if (!BehaviorTreeComponent->IsRunning()) return EStateTreeRunStatus::Succeeded;
 
 	return EStateTreeRunStatus::Running;
 }
@@ -82,12 +60,7 @@ void FUEProjectSTTask_RunBehaviorTree::ExitState(FStateTreeExecutionContext& Con
 
     UBehaviorTreeComponent* const BehaviorTreeComponent = 
 		Cast<UBehaviorTreeComponent>(InstanceData.AIController->GetBrainComponent());
-	if (!BehaviorTreeComponent)
-	{
-		UE_VLOG(Context.GetOwner(), LogStateTree, Error, 
-			TEXT("Unable to retrieve BehaviorTreeComponent from AIController."));
-        return;
-	}
+	if (!BehaviorTreeComponent) return;
 
     if (BehaviorTreeComponent->IsRunning())
     {
@@ -102,12 +75,7 @@ void FUEProjectSTTask_RunBehaviorTree::SetBlackboardKeysFromPropertyBag(
     FInstanceDataType& InstanceData = Context.GetInstanceData(*this);
 
     const UPropertyBag* const PropertyBag = InstanceData.InputParameters.GetPropertyBagStruct();
-    if (!PropertyBag)
-    {
-        UE_VLOG(Context.GetOwner(), LogStateTree, Verbose, 
-            TEXT("Unable to extract UPropertyBag ptr from FInstancedPropertyBag."));
-        return;
-    }
+    if (!PropertyBag) return;
 
     const int32 NumProperties = InstanceData.InputParameters.GetNumPropertiesInBag();
     for (int32 PropertyIdx = 0; PropertyIdx < NumProperties; PropertyIdx++)
@@ -117,12 +85,7 @@ void FUEProjectSTTask_RunBehaviorTree::SetBlackboardKeysFromPropertyBag(
         const FName KeyName = PropDesc.Name;
 
         // Skip, if the blackboard does not have a matching key
-        if (BlackboardComponent.GetKeyID(KeyName) == FBlackboard::InvalidKey)
-        {
-            UE_VLOG(Context.GetOwner(), LogStateTree, Warning,
-                TEXT("No matching Blackboard key named '%s'."), *KeyName.ToString());
-            continue;
-        }
+        if (BlackboardComponent.GetKeyID(KeyName) == FBlackboard::InvalidKey) continue;
 
         // Read the actual value from the property bag, and set it onto the BB key value
         switch (PropDesc.ValueType)
