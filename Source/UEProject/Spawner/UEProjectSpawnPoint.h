@@ -3,6 +3,7 @@
 #include <CoreMinimal.h>
 #include <GameFramework/Actor.h>
 
+#include "UEProject/AI/Controller/UEProjectAIController.h"
 #include "UEProject/Characters/UEProjectCharacter.h"
 
 #include "UEProjectSpawnPoint.generated.h"
@@ -29,7 +30,6 @@ public:
 protected:
 
 #if WITH_EDITOR
-
 	//////////////////////////////////////////////////////////////////////////
     // UObject overrides
 
@@ -51,8 +51,7 @@ protected:
 
     // Check for collisions and update the material
     void UpdateMaterialBasedOnCollision();
-
-#endif
+#endif // WITH_EDITOR
 
 	/** The arrow component to indicate the spawn direction. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawn")
@@ -62,13 +61,16 @@ protected:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Spawn")
 	TSubclassOf<AUEProjectCharacter> CharacterClass;
 
+	/** The class of the AI controller that possesses the character. */
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Spawn")
+	TSubclassOf<AUEProjectAIController> AIControllerClass;
+
 	/** Whether this spawn point is enabled. */
     UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Spawn", 
 			  meta = (DisplayName = "Is Enabled"))
     bool bIsEnabled = true;
 
 #if WITH_EDITORONLY_DATA
-
 	UPROPERTY()
 	UBillboardComponent* IconBillboard;
 
@@ -82,6 +84,5 @@ protected:
 	/** Material applied to the preview mesh, used when spawn point is colliding with something. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawn")
 	UMaterialInterface* WrongPlacementMaterial;
-
-#endif
+#endif // WITH_EDITORONLY_DATA
 };

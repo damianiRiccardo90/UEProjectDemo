@@ -93,8 +93,8 @@ bool AUEProjectPatrolNetwork::GetPointRotation(int32 InIndex, FRotator& OutRotat
     return bIsValidIndex;
 }
 
-float AUEProjectPatrolNetwork::GetDistanceAlongPathToPoint(int32 TargetIndex, 
-                                                           const FVector& CurrentLocation) const
+float AUEProjectPatrolNetwork::GetDistanceAlongPathToPoint(
+    int32 TargetIndex, const FVector& CurrentLocation) const
 {
     if (!IsValidPointIndex(TargetIndex)) return -1.0f;
 
@@ -105,8 +105,8 @@ float AUEProjectPatrolNetwork::GetDistanceAlongPathToPoint(int32 TargetIndex,
     return PatrolPath->GetDistanceAlongSplineAtSplinePoint(TargetIndex) - Distance;
 }
 
-bool AUEProjectPatrolNetwork::FindNearestPointOnPath(const FVector& InWorldLocation, float& OutDistance, 
-                                                     int32& OutPointIndex) const
+bool AUEProjectPatrolNetwork::FindNearestPointOnPath(
+    const FVector& InWorldLocation, float& OutDistance, int32& OutPointIndex) const
 {
     if (GetNumPoints() == 0) return false;
 

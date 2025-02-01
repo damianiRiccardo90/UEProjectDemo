@@ -34,7 +34,7 @@ public:
     UUEProjectAttributeSet_CharacterBase* GetBaseAttributeSet() const;
 #if WITH_EDITOR
     UStaticMesh* GetPreviewPose() const;
-#endif
+#endif // WITH_EDITOR
 
 protected:
 
@@ -77,5 +77,5 @@ protected:
 #if WITH_EDITORONLY_DATA
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mesh")
     UStaticMesh* PreviewPose;
-#endif
+#endif // WITH_EDITORONLY_DATA
 };

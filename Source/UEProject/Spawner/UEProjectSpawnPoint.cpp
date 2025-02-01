@@ -7,16 +7,17 @@
 #include <Engine/Texture2D.h>
 
 
-AUEProjectSpawnPoint::AUEProjectSpawnPoint() :
-    ArrowComponent(nullptr),
-	CharacterClass(nullptr),
-    bIsEnabled(true),
+AUEProjectSpawnPoint::AUEProjectSpawnPoint()
+    : ArrowComponent(nullptr)
+	, CharacterClass(nullptr)
+    , AIControllerClass(nullptr)
+    , bIsEnabled(true)
 #if WITH_EDITORONLY_DATA
-    IconBillboard(nullptr),
-    PreviewMeshComponent(nullptr),
-    CorrectPlacementMaterial(nullptr),
-    WrongPlacementMaterial(nullptr)
-#endif
+    , IconBillboard(nullptr)
+    , PreviewMeshComponent(nullptr)
+    , CorrectPlacementMaterial(nullptr)
+    , WrongPlacementMaterial(nullptr)
+#endif // WITH_EDITORONLY_DATA
 {
     // Allow ticking if needed (off by default)
     PrimaryActorTick.bCanEverTick = false;
@@ -47,7 +48,7 @@ AUEProjectSpawnPoint::AUEProjectSpawnPoint() :
     PreviewMeshComponent->SetupAttachment(ArrowComponent);
     PreviewMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     PreviewMeshComponent->SetVisibility(false); // Initially hidden
-#endif
+#endif // WITH_EDITOR
 }
 
 void AUEProjectSpawnPoint::SpawnCharacter()
@@ -65,7 +66,17 @@ void AUEProjectSpawnPoint::SpawnCharacter()
         ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
     // Spawn the character
-    GetWorld()->SpawnActor<ACharacter>(CharacterClass, SpawnTransform, SpawnParams);
+    ACharacter* const SpawnedCharacter =
+        GetWorld()->SpawnActor<ACharacter>(CharacterClass, SpawnTransform, SpawnParams);
+    if (!SpawnedCharacter) return;
+
+    // Spawn the AI controller
+    AUEProjectAIController* const AIController =
+        GetWorld()->SpawnActor<AUEProjectAIController>(AIControllerClass);
+    if (!AIController) return;
+
+    // Possess the character with the AI controller
+    AIController->Possess(SpawnedCharacter);
 }
 
 #if WITH_EDITOR
@@ -166,4 +177,4 @@ void AUEProjectSpawnPoint::UpdateMaterialBasedOnCollision()
     PreviewMeshComponent->SetMaterial(
         0, bIsColliding ? WrongPlacementMaterial : CorrectPlacementMaterial);
 }
-#endif
+#endif // WITH_EDITOR

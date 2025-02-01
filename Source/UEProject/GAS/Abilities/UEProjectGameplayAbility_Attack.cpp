@@ -59,8 +59,8 @@ void UUEProjectGameplayAbility_Attack::ActivateAbility(
     {
         // Create a montage task to asynchronously play the montage
         UAbilityTask_PlayMontageAndWait* const MontageTask = 
-            UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, AttackMontage,
-                                                                           1.0f, NAME_None, false, 1.0f);
+            UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
+                this, NAME_None, AttackMontage, 1.0f, NAME_None, false, 1.0f);
 
         // Bind delegates
         MontageTask->OnCompleted.AddDynamic(this, &UUEProjectGameplayAbility_Attack::EndAbilityDirect);
@@ -82,8 +82,8 @@ void UUEProjectGameplayAbility_Attack::EndAbilityDirect()
     ACharacter* const AvatarCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo());
     if (!AvatarCharacter)
     {
-        EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), 
-                   GetCurrentActivationInfo(), true, false);
+        EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), 
+            true, false);
         return;
     }
 
@@ -97,8 +97,8 @@ void UUEProjectGameplayAbility_Attack::EndAbilityDirect()
     FCollisionQueryParams QueryParams;
     QueryParams.AddIgnoredActor(AvatarCharacter);
 
-    const bool bHit = GetWorld()->SweepMultiByChannel(HitResults, Start, End, FQuat::Identity, ECC_Pawn, 
-                                                      FCollisionShape::MakeSphere(Radius), QueryParams);
+    const bool bHit = GetWorld()->SweepMultiByChannel(HitResults, Start, End, 
+        FQuat::Identity, ECC_Pawn, FCollisionShape::MakeSphere(Radius), QueryParams);
 
     if (bHit)
     {
@@ -130,6 +130,6 @@ void UUEProjectGameplayAbility_Attack::EndAbilityDirect()
         }
     }
 
-    EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), 
-               GetCurrentActivationInfo(), true, false);
+    EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), 
+        true, false);
 }

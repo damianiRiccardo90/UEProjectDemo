@@ -28,7 +28,7 @@ AUEProjectCharacter::AUEProjectCharacter()
 	, BaseAttributeSet(nullptr)
 #if WITH_EDITORONLY_DATA
 	, PreviewPose(nullptr)
-#endif
+#endif // WITH_EDITORONLY_DATA
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.f);
@@ -90,7 +90,7 @@ UStaticMesh* AUEProjectCharacter::GetPreviewPose() const
 {
 	return PreviewPose;
 }
-#endif
+#endif // WITH_EDITOR
 
 void AUEProjectCharacter::NotifyControllerChanged()
 {
