@@ -22,7 +22,7 @@ public:
 
 	UStateTreeAIComponent* GetStateTreeAIComponent() const;
 
-	bool RunBehaviorTree(UBehaviorTree* BTAsset, bool bLoop = true);
+	bool RunBehaviorTreeWithLoop(UBehaviorTree* BTAsset, bool bLoop = true);
 
 protected:
 

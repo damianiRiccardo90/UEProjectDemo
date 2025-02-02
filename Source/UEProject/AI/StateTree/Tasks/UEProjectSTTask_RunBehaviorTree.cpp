@@ -33,7 +33,7 @@ EStateTreeRunStatus FUEProjectSTTask_RunBehaviorTree::EnterState(
 
     SetBlackboardKeysFromPropertyBag(Context, *BlackboardComponent);
 
-	InstanceData.AIController->RunBehaviorTree(InstanceData.BehaviorTree, InstanceData.bLoop);
+	InstanceData.AIController->RunBehaviorTreeWithLoop(InstanceData.BehaviorTree, InstanceData.bLoop);
 
 	return EStateTreeRunStatus::Running;
 }

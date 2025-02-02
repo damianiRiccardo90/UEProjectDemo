@@ -17,7 +17,7 @@ UStateTreeAIComponent* AUEProjectAIController::GetStateTreeAIComponent() const
 	return StateTreeAIComponent;
 }
 
-bool AUEProjectAIController::RunBehaviorTree(UBehaviorTree* BTAsset, bool bLoop /*= true*/)
+bool AUEProjectAIController::RunBehaviorTreeWithLoop(UBehaviorTree* BTAsset, bool bLoop /*= true*/)
 {
 	if (!BTAsset) return false;
 
