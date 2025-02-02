@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include <CoreMinimal.h>
@@ -10,14 +8,10 @@
 
 class AUEProjectSpawnPoint;
 
-UCLASS(minimalapi)
+UCLASS()
 class AUEProjectGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-
-public:
-
-	AUEProjectGameMode();
 
 protected:
 

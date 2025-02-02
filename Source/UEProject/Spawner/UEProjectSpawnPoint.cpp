@@ -10,7 +10,6 @@
 AUEProjectSpawnPoint::AUEProjectSpawnPoint()
     : ArrowComponent(nullptr)
 	, CharacterClass(nullptr)
-    , AIControllerClass(nullptr)
     , bIsEnabled(true)
 #if WITH_EDITORONLY_DATA
     , IconBillboard(nullptr)
@@ -27,8 +26,6 @@ AUEProjectSpawnPoint::AUEProjectSpawnPoint()
     RootComponent = ArrowComponent;
     ArrowComponent->SetArrowColor(FColor::Green);
     ArrowComponent->SetArrowLength(100.f);
-    // Hide the arrow at runtime, but keep it visible in the editor
-    ArrowComponent->SetHiddenInGame(true, true);
 
 #if WITH_EDITOR
     // Create the Billboard icon and attach it to the arrow
@@ -66,17 +63,7 @@ void AUEProjectSpawnPoint::SpawnCharacter()
         ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
     // Spawn the character
-    ACharacter* const SpawnedCharacter =
-        GetWorld()->SpawnActor<ACharacter>(CharacterClass, SpawnTransform, SpawnParams);
-    if (!SpawnedCharacter) return;
-
-    // Spawn the AI controller
-    AUEProjectAIController* const AIController =
-        GetWorld()->SpawnActor<AUEProjectAIController>(AIControllerClass);
-    if (!AIController) return;
-
-    // Possess the character with the AI controller
-    AIController->Possess(SpawnedCharacter);
+    GetWorld()->SpawnActor<ACharacter>(CharacterClass, SpawnTransform, SpawnParams);
 }
 
 #if WITH_EDITOR
@@ -95,6 +82,16 @@ void AUEProjectSpawnPoint::PostEditChangeProperty(FPropertyChangedEvent& Propert
     }
 }
 
+void AUEProjectSpawnPoint::BeginPlay()
+{
+    Super::BeginPlay();
+
+    if (ArrowComponent)
+    {
+        ArrowComponent->SetVisibility(false, true);
+    }
+}
+
 void AUEProjectSpawnPoint::PostEditMove(bool bFinished)
 {
     Super::PostEditMove(bFinished);
@@ -109,8 +106,8 @@ void AUEProjectSpawnPoint::UpdatePreviewMesh()
 
     if (CharacterClass)
     {
-        if (const AUEProjectCharacter* const DefaultCharacter =
-                CharacterClass->GetDefaultObject<AUEProjectCharacter>())
+        if (const AUEProjectNPCCharacter* const DefaultCharacter =
+                CharacterClass->GetDefaultObject<AUEProjectNPCCharacter>())
         {
             if (UStaticMesh* const CharacterPreviewMesh = DefaultCharacter->GetPreviewPose())
             {
@@ -158,7 +155,7 @@ void AUEProjectSpawnPoint::UpdateMaterialBasedOnCollision()
 
     // Get the capsule from the default character
     const UCapsuleComponent* const DefaultCapsule = 
-        CharacterClass->GetDefaultObject<AUEProjectCharacter>()->GetCapsuleComponent();
+        CharacterClass->GetDefaultObject<AUEProjectNPCCharacter>()->GetCapsuleComponent();
 
     // Simple overlap test using character's capsule dimensions at the spawn point location
     TArray<FOverlapResult> Overlaps;

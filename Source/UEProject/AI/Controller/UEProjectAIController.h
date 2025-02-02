@@ -6,7 +6,7 @@
 #include "UEProjectAIController.generated.h"
 
 
-class UStateTreeComponent;
+class UStateTreeAIComponent;
 
 /**
  * Base AI Controller that runs a State Tree.
@@ -20,8 +20,12 @@ public:
 
 	AUEProjectAIController();
 
+	UStateTreeAIComponent* GetStateTreeAIComponent() const;
+
+	bool RunBehaviorTree(UBehaviorTree* BTAsset, bool bLoop = true);
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AIController")
-	UStateTreeComponent* StateTreeComponent;
+	UStateTreeAIComponent* StateTreeAIComponent;
 };

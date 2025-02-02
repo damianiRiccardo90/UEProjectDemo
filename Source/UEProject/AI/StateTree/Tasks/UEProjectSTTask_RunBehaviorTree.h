@@ -6,7 +6,7 @@
 #include "UEProjectSTTask_RunBehaviorTree.generated.h"
 
 
-class AAIController;
+class AUEProjectAIController;
 class UBehaviorTree;
 class UBlackboardComponent;
 struct FInstancedPropertyBag;
@@ -18,7 +18,7 @@ struct FUEProjectSTInstanceData_RunBehaviorTree
 
 	/** The AI controller that will run the tree. */
 	UPROPERTY(EditAnywhere, Category = "Context")
-	AAIController* AIController = nullptr;
+	AUEProjectAIController* AIController = nullptr;
 
 	/** The behavior tree that will run. */
 	UPROPERTY(EditAnywhere, Category = "Parameter")

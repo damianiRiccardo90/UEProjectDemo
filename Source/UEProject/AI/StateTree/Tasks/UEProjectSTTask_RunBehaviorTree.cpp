@@ -1,10 +1,12 @@
 #include "UEProjectSTTask_RunBehaviorTree.h"
 
-#include <AIController.h>
+#include <BehaviorTree/BehaviorTree.h>
 #include <BehaviorTree/BehaviorTreeComponent.h>
 #include <BehaviorTree/BehaviorTreeTypes.h>
 #include <BehaviorTree/BlackboardComponent.h>
 #include <StateTreeExecutionContext.h>
+
+#include "UEProject/AI/Controller/UEProjectAIController.h"
 
 
 const UStruct* FUEProjectSTTask_RunBehaviorTree::GetInstanceDataType() const
@@ -21,20 +23,17 @@ EStateTreeRunStatus FUEProjectSTTask_RunBehaviorTree::EnterState(
     {
         return EStateTreeRunStatus::Failed;
     }
-
-	UBehaviorTreeComponent* const BehaviorTreeComponent = 
-		Cast<UBehaviorTreeComponent>(InstanceData.AIController->GetBrainComponent());
-	if (!BehaviorTreeComponent) return EStateTreeRunStatus::Failed;
-
-	UBlackboardComponent* const BlackboardComponent = 
-		BehaviorTreeComponent->GetBlackboardComponent();
-    if (BlackboardComponent)
+    
+    UBlackboardComponent* BlackboardComponent = nullptr;
+    if (!InstanceData.AIController->UseBlackboard(
+            InstanceData.BehaviorTree->BlackboardAsset, BlackboardComponent))
     {
-        SetBlackboardKeysFromPropertyBag(Context, *BlackboardComponent);
+        return EStateTreeRunStatus::Failed;
     }
 
-	BehaviorTreeComponent->StartTree(*InstanceData.BehaviorTree, 
-		InstanceData.bLoop ? EBTExecutionMode::Looped : EBTExecutionMode::SingleRun);
+    SetBlackboardKeysFromPropertyBag(Context, *BlackboardComponent);
+
+	InstanceData.AIController->RunBehaviorTree(InstanceData.BehaviorTree, InstanceData.bLoop);
 
 	return EStateTreeRunStatus::Running;
 }

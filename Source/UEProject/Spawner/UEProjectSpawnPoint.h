@@ -3,8 +3,7 @@
 #include <CoreMinimal.h>
 #include <GameFramework/Actor.h>
 
-#include "UEProject/AI/Controller/UEProjectAIController.h"
-#include "UEProject/Characters/UEProjectCharacter.h"
+#include "UEProject/Characters/UEProjectNPCCharacter.h"
 
 #include "UEProjectSpawnPoint.generated.h"
 
@@ -41,6 +40,7 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
     // AActor overrides
 
+	virtual void BeginPlay() override;
 	virtual void PostEditMove(bool bFinished) override;
 
 	// AActor overrides
@@ -59,11 +59,7 @@ protected:
 
 	/** The class of the character to spawn. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Spawn")
-	TSubclassOf<AUEProjectCharacter> CharacterClass;
-
-	/** The class of the AI controller that possesses the character. */
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Spawn")
-	TSubclassOf<AUEProjectAIController> AIControllerClass;
+	TSubclassOf<AUEProjectNPCCharacter> CharacterClass;
 
 	/** Whether this spawn point is enabled. */
     UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Spawn", 
