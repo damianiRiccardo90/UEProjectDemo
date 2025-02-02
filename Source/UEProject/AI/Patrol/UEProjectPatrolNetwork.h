@@ -147,10 +147,6 @@ protected:
               meta = (DisplayName = "Loop Path"))
     bool bLoopPath;
 
-    /** Number of sample points along spline, used to find the closest. */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Patrol")
-    int32 NumSamplePoints;
-
 private:
 
     // Tracks patrol direction: true => forward, false => backward

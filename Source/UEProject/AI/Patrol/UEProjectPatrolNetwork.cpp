@@ -10,7 +10,6 @@ AUEProjectPatrolNetwork::AUEProjectPatrolNetwork(const FObjectInitializer& Objec
     , PatrolPath(nullptr)
 	, bBidirectional(false)
     , bLoopPath(true)
-    , NumSamplePoints(50)
     , bCurrentDirectionIsForward(true)
 {
 	PatrolPath = CreateDefaultSubobject<USplineComponent>("PatrolPath");
@@ -109,26 +108,30 @@ float AUEProjectPatrolNetwork::GetDistanceAlongPathToPoint(
 bool AUEProjectPatrolNetwork::FindNearestPointOnPath(
     const FVector& InWorldLocation, float& OutDistance, int32& OutPointIndex) const
 {
-    if (GetNumPoints() == 0) return false;
+    if (!GetNumPoints()) return false;
 
-    float ClosestDistance = MAX_FLT;
-    const float SplineLength = PatrolPath->GetSplineLength();
-    
-    // Iterate over sample points along the spline to find the closest
-    for (int32 i = 0; i < NumSamplePoints; i++)
+    float ClosestDistanceSquared = MAX_FLT;
+    int32 BestIndex = INDEX_NONE;
+
+    // Iterate over the patrol points along the spline to find the closest
+    for (int32 i = 0; i < GetNumPoints(); ++i)
     {
-        const float Distance = (SplineLength * i) / (NumSamplePoints - 1);
-        const FVector SamplePoint = PatrolPath->GetLocationAtDistanceAlongSpline(
-            Distance, ESplineCoordinateSpace::World);
-        
-        const float SquaredDistance = FVector::DistSquared(InWorldLocation, SamplePoint);
-        if (SquaredDistance < ClosestDistance)
+        const FVector PointLocation = 
+            PatrolPath->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World);
+        const float DistanceSquared = FVector::DistSquared(InWorldLocation, PointLocation);
+        if (DistanceSquared < ClosestDistanceSquared)
         {
-            ClosestDistance = SquaredDistance;
-            OutDistance = Distance;
-            OutPointIndex = PatrolPath->FindInputKeyClosestToWorldLocation(SamplePoint);
+            ClosestDistanceSquared = DistanceSquared;
+            BestIndex = i;
         }
     }
+
+    if (BestIndex == INDEX_NONE) return false;
+
+    // Return the index of the closest spline point
+    OutPointIndex = BestIndex;
+    // Also return the distance along the spline at that discrete point
+    OutDistance = PatrolPath->GetDistanceAlongSplineAtSplinePoint(BestIndex);
 
     return true;
 }
