@@ -15,7 +15,8 @@ class UUEProjectAttributeSet_CharacterBase : public UAttributeSet
 
 public:
 
-    UUEProjectAttributeSet_CharacterBase();
+    UUEProjectAttributeSet_CharacterBase(
+        const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
     //////////////////////////////////////////////////////////////////////////
     // UAttributeSet overrides

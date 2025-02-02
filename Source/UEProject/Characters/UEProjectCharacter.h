@@ -27,7 +27,7 @@ class AUEProjectCharacter : public ACharacter
 
 public:
 
-	AUEProjectCharacter();
+	AUEProjectCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UGameplayCameraComponent* GetGameplayCamera() const;
 	UAbilitySystemComponent* GetAbilitySystem() const;

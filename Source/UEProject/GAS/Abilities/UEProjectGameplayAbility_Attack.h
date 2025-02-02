@@ -17,7 +17,8 @@ class UUEProjectGameplayAbility_Attack : public UGameplayAbility
 
 public:
 
-    UUEProjectGameplayAbility_Attack();
+    UUEProjectGameplayAbility_Attack(
+        const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
     //////////////////////////////////////////////////////////////////////////
     // UGameplayAbility overrides

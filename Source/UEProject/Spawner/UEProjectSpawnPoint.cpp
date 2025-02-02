@@ -7,8 +7,9 @@
 #include <Engine/Texture2D.h>
 
 
-AUEProjectSpawnPoint::AUEProjectSpawnPoint()
-    : ArrowComponent(nullptr)
+AUEProjectSpawnPoint::AUEProjectSpawnPoint(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer)
+    , ArrowComponent(nullptr)
 	, CharacterClass(nullptr)
     , bIsEnabled(true)
 #if WITH_EDITORONLY_DATA

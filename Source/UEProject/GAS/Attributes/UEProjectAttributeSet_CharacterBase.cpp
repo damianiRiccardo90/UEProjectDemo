@@ -3,7 +3,9 @@
 #include "GameplayEffectExtension.h"
 
 
-UUEProjectAttributeSet_CharacterBase::UUEProjectAttributeSet_CharacterBase()
+UUEProjectAttributeSet_CharacterBase::UUEProjectAttributeSet_CharacterBase(
+    const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer)
 {
     // Initialize Health via the macro-generated InitHealth function.
     InitHealth(100.f);

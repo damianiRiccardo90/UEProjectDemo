@@ -7,8 +7,10 @@
 #include "UEProject/AI/Patrol/UEProjectPatrolNetwork.h"
 
 
-UUEProjectBTTask_MoveToNextPatrolPoint::UUEProjectBTTask_MoveToNextPatrolPoint()
-    : AcceptableRadius(50.f)
+UUEProjectBTTask_MoveToNextPatrolPoint::UUEProjectBTTask_MoveToNextPatrolPoint(
+    const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer)
+    , AcceptableRadius(50.f)
 {
     NodeName = TEXT("Move To Next Patrol Point");
 }

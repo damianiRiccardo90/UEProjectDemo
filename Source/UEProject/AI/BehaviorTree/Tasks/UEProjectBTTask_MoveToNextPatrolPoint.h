@@ -13,7 +13,8 @@ class UUEProjectBTTask_MoveToNextPatrolPoint : public UBTTaskNode
 
 public:
 
-	UUEProjectBTTask_MoveToNextPatrolPoint();
+	UUEProjectBTTask_MoveToNextPatrolPoint(
+		const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	//////////////////////////////////////////////////////////////////////////
 	// UBTTaskNode overrides

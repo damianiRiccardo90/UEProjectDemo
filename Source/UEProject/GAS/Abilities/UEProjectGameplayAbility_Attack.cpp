@@ -11,8 +11,10 @@
 #include "UEProject/GAS/UEProjectGameplayTagsLibrary.h"
 
 
-UUEProjectGameplayAbility_Attack::UUEProjectGameplayAbility_Attack()
-    : AttackMontage(nullptr)
+UUEProjectGameplayAbility_Attack::UUEProjectGameplayAbility_Attack(
+    const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer)
+    , AttackMontage(nullptr)
     , AttackRange(200.f)
     , AttackDamage(25.f)
     , DamageEffect(nullptr)

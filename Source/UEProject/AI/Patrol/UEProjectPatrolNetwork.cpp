@@ -5,8 +5,9 @@
 #include <NavigationSystem.h>
 
 
-AUEProjectPatrolNetwork::AUEProjectPatrolNetwork()
-	: PatrolPath(nullptr)
+AUEProjectPatrolNetwork::AUEProjectPatrolNetwork(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer)
+    , PatrolPath(nullptr)
 	, bBidirectional(false)
     , bLoopPath(true)
     , NumSamplePoints(50)

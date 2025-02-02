@@ -22,7 +22,8 @@ class AUEProjectPatrolNetwork : public AActor
 
 public:
 
-    AUEProjectPatrolNetwork();
+    AUEProjectPatrolNetwork(
+        const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
     /**
      * Get the next patrol point in the network based on current index.

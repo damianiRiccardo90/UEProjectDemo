@@ -18,7 +18,8 @@ class AUEProjectAIController : public AAIController
 
 public:
 
-	AUEProjectAIController();
+	AUEProjectAIController(
+		const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UStateTreeAIComponent* GetStateTreeAIComponent() const;
 

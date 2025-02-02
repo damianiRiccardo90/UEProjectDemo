@@ -5,7 +5,9 @@
 #include "UEProject/GAS/Attributes/UEProjectAttributeSet_CharacterBase.h"
 
 
-UUEProjectGameplayEffect_ApplyDamage::UUEProjectGameplayEffect_ApplyDamage()
+UUEProjectGameplayEffect_ApplyDamage::UUEProjectGameplayEffect_ApplyDamage(
+    const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer)
 {
     // Make this effect apply instantly
     DurationPolicy = EGameplayEffectDurationType::Instant;

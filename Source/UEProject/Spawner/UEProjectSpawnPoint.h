@@ -21,7 +21,7 @@ class AUEProjectSpawnPoint : public AActor
 
 public:
 
-	AUEProjectSpawnPoint();
+	AUEProjectSpawnPoint(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	// Spawns the character by using the arrow component rotation to set the character initial facing
 	void SpawnCharacter();

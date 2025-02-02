@@ -18,8 +18,9 @@
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
-AUEProjectCharacter::AUEProjectCharacter()
-	: GameplayCamera(nullptr)
+AUEProjectCharacter::AUEProjectCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+	, GameplayCamera(nullptr)
 	, AbilitySystem(nullptr)
 	, DefaultMappingContext(nullptr)
 	, JumpAction(nullptr)

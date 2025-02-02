@@ -19,7 +19,8 @@ class AUEProjectPlayerCharacter : public AUEProjectBaseCharacter
 
 public:
 
-	AUEProjectPlayerCharacter();
+	AUEProjectPlayerCharacter(
+		const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UGameplayCameraComponent* GetGameplayCamera() const;
 

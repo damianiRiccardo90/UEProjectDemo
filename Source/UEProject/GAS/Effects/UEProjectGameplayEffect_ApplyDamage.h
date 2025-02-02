@@ -17,5 +17,6 @@ class UUEProjectGameplayEffect_ApplyDamage : public UGameplayEffect
 
 public:
 
-    UUEProjectGameplayEffect_ApplyDamage();
+    UUEProjectGameplayEffect_ApplyDamage(
+        const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 };

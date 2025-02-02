@@ -6,8 +6,9 @@
 #include <Components/StateTreeAIComponent.h>
 
 
-AUEProjectAIController::AUEProjectAIController()
-	: StateTreeAIComponent(nullptr)
+AUEProjectAIController::AUEProjectAIController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+	, StateTreeAIComponent(nullptr)
 {
 	StateTreeAIComponent = CreateDefaultSubobject<UStateTreeAIComponent>("StateTreeAIComponent");
 }

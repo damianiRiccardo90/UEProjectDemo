@@ -12,8 +12,9 @@
 #include <InputActionValue.h>
 
 
-AUEProjectPlayerCharacter::AUEProjectPlayerCharacter()
-	: GameplayCamera(nullptr)
+AUEProjectPlayerCharacter::AUEProjectPlayerCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+	, GameplayCamera(nullptr)
 	, DefaultMappingContext(nullptr)
 	, JumpAction(nullptr)
 	, MoveAction(nullptr)
