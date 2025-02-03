@@ -65,9 +65,9 @@ void UUEProjectGameplayAbility_Attack::ActivateAbility(
                 this, NAME_None, AttackMontage, 1.0f, NAME_None, false, 1.0f);
 
         // Bind delegates
-        MontageTask->OnCompleted.AddDynamic(this, &UUEProjectGameplayAbility_Attack::EndAbilityDirect);
-        MontageTask->OnInterrupted.AddDynamic(this, &UUEProjectGameplayAbility_Attack::EndAbilityDirect);
-        MontageTask->OnCancelled.AddDynamic(this, &UUEProjectGameplayAbility_Attack::EndAbilityDirect);
+        MontageTask->OnCompleted.AddDynamic(this, &ThisClass::EndAbilityDirect);
+        MontageTask->OnInterrupted.AddDynamic(this, &ThisClass::EndAbilityDirect);
+        MontageTask->OnCancelled.AddDynamic(this, &ThisClass::EndAbilityDirect);
 
         MontageTask->ReadyForActivation();
     }

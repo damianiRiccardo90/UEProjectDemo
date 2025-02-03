@@ -40,17 +40,17 @@ void AUEProjectPlayerController::SetupInputComponent()
 
     // Jumping
     EnhancedInputComponent->BindAction(
-        JumpAction, ETriggerEvent::Started, this, &AUEProjectPlayerController::Jump);
+        JumpAction, ETriggerEvent::Started, this, &ThisClass::Jump);
     EnhancedInputComponent->BindAction(
-        JumpAction, ETriggerEvent::Completed, this, &AUEProjectPlayerController::StopJumping);
+        JumpAction, ETriggerEvent::Completed, this, &ThisClass::StopJumping);
 
     // Moving
     EnhancedInputComponent->BindAction(
-        MoveAction, ETriggerEvent::Triggered, this, &AUEProjectPlayerController::Move);
+        MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
 
     // Looking
     EnhancedInputComponent->BindAction(
-        LookAction, ETriggerEvent::Triggered, this, &AUEProjectPlayerController::Look);
+        LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
 }
 
 void AUEProjectPlayerController::Jump(const FInputActionValue& Value)

@@ -51,18 +51,18 @@ public:
 protected:
 
     /** Animation montage to play when the ability is activated */
-    UPROPERTY(EditDefaultsOnly, Category = "Attack")
+    UPROPERTY(EditDefaultsOnly, Category = "Gameplay Ability")
     UAnimMontage* AttackMontage;
 
     /** The maximum distance at which this ability can hit a target */
-    UPROPERTY(EditDefaultsOnly, Category = "Attack")
+    UPROPERTY(EditDefaultsOnly, Category = "Gameplay Ability")
     float AttackRange;
 
     /** Base damage to apply when hitting a target */
-    UPROPERTY(EditDefaultsOnly, Category = "Attack")
+    UPROPERTY(EditDefaultsOnly, Category = "Gameplay Ability")
     float AttackDamage;
 
     /** GameplayEffect to apply for dealing damage to the target. */
-    UPROPERTY(EditDefaultsOnly, Category = "Attack")
+    UPROPERTY(EditDefaultsOnly, Category = "Gameplay Ability")
     TSubclassOf<UGameplayEffect> DamageEffect;
 };
