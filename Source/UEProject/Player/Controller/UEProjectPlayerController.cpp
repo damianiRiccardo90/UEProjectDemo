@@ -74,8 +74,8 @@ void AUEProjectPlayerController::Move(const FInputActionValue& Value)
     ACharacter* const CurrentCharacter = GetCharacter();
     if (!CurrentCharacter) return;
 
-    const APlayerCameraManager* const CameraManager = 
-        UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)
+    const APlayerCameraManager* const CameraManager =
+        UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
     if (!CameraManager) return;
 
     const FRotator CameraRotation = CameraManager->GetCameraRotation();
