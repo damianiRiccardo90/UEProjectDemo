@@ -3,8 +3,6 @@
 #include <CoreMinimal.h>
 #include <GameFramework/Actor.h>
 
-#include "UEProject/Characters/UEProjectCharacter.h"
-
 #include "UEProjectPatrolNetwork.generated.h"
 
 

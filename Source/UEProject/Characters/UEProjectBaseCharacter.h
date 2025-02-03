@@ -10,6 +10,7 @@
 
 class UAbilitySystemComponent;
 class UUEProjectAttributeSet_CharacterBase;
+class UUEProjectCharacterMovementComponent;
 
 UCLASS()
 class AUEProjectBaseCharacter : public ACharacter
@@ -18,10 +19,11 @@ class AUEProjectBaseCharacter : public ACharacter
 
 public:
 
-	AUEProjectBaseCharacter();
+	AUEProjectBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
 	UAbilitySystemComponent* GetAbilitySystem() const;
     UUEProjectAttributeSet_CharacterBase* GetBaseAttributeSet() const;
+    UUEProjectCharacterMovementComponent* GetCustomMovementComponent() const;
 
 protected:
 

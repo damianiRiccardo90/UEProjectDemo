@@ -114,7 +114,7 @@ bool AUEProjectPatrolNetwork::FindNearestPointOnPath(
     int32 BestIndex = INDEX_NONE;
 
     // Iterate over the patrol points along the spline to find the closest
-    for (int32 i = 0; i < GetNumPoints(); ++i)
+    for (int32 i = 0; i < GetNumPoints(); i++)
     {
         const FVector PointLocation = 
             PatrolPath->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World);

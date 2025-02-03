@@ -16,7 +16,8 @@ class AUEProjectNPCCharacter : public AUEProjectBaseCharacter
 
 public:
 
-	AUEProjectNPCCharacter();
+	AUEProjectNPCCharacter(
+        const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 #if WITH_EDITOR
     UStaticMesh* GetPreviewPose() const;

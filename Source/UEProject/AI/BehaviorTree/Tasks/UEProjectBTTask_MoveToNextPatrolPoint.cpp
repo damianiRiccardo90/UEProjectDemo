@@ -13,6 +13,7 @@ UUEProjectBTTask_MoveToNextPatrolPoint::UUEProjectBTTask_MoveToNextPatrolPoint(
     , AcceptableRadius(50.f)
 {
     NodeName = TEXT("Move To Next Patrol Point");
+    bNotifyTick = true;
 }
 
 EBTNodeResult::Type UUEProjectBTTask_MoveToNextPatrolPoint::ExecuteTask(
@@ -68,6 +69,33 @@ EBTNodeResult::Type UUEProjectBTTask_MoveToNextPatrolPoint::ExecuteTask(
         EBTNodeResult::InProgress : EBTNodeResult::Failed;
 }
 
+void UUEProjectBTTask_MoveToNextPatrolPoint::TickTask(UBehaviorTreeComponent& OwnerComp, 
+    uint8* NodeMemory, float DeltaSeconds)
+{
+    Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
+    const AAIController* const AIController = OwnerComp.GetAIOwner();
+    if (!AIController)
+    {
+        FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+        return;
+    }
+
+    const UPathFollowingComponent* const PathFollowingComponent = 
+        AIController->GetPathFollowingComponent();
+    if (!PathFollowingComponent)
+    {
+        FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+        return;
+    }
+
+    // Check PathFollowing status
+    if (PathFollowingComponent->GetStatus() != EPathFollowingStatus::Moving)
+    {
+        FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+    }
+}
+
 void UUEProjectBTTask_MoveToNextPatrolPoint::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, 
     uint8* NodeMemory, EBTNodeResult::Type TaskResult)
 {
@@ -77,14 +105,4 @@ void UUEProjectBTTask_MoveToNextPatrolPoint::OnTaskFinished(UBehaviorTreeCompone
     }
     
     Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
-}
-
-void UUEProjectBTTask_MoveToNextPatrolPoint::OnMessage(UBehaviorTreeComponent& OwnerComp, 
-    uint8* NodeMemory, FName Message, int32 SenderID, bool bSuccess)
-{
-    if (Message == UBrainComponent::AIMessage_MoveFinished)
-    {
-        FinishLatentTask(OwnerComp, 
-            bSuccess ? EBTNodeResult::Succeeded : EBTNodeResult::Failed);
-    }
 }

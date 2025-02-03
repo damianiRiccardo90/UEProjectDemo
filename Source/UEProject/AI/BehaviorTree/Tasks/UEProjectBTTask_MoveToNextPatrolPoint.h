@@ -22,11 +22,11 @@ public:
 	virtual EBTNodeResult::Type ExecuteTask(
 		UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, 
+		uint8* NodeMemory, float DeltaSeconds) override;
+
 	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp,
 		uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
-
-	virtual void OnMessage(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, 
-		FName Message, int32 SenderID, bool bSuccess) override;
 
 	// UBTTaskNode overrides
 	//////////////////////////////////////////////////////////////////////////

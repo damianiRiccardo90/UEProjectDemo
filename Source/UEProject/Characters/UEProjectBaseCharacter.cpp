@@ -1,18 +1,28 @@
 #include "UEProjectBaseCharacter.h"
 
 #include <AbilitySystemComponent.h>
+#include <Components/CapsuleComponent.h>
 
+#include "UEProject/Characters/Movement/UEProjectCharacterMovementComponent.h"
 #include "UEProject/GAS/Attributes/UEProjectAttributeSet_CharacterBase.h"
 
 
-AUEProjectBaseCharacter::AUEProjectBaseCharacter()
-	: AbilitySystem(nullptr)
-	, BaseAttributeSet(nullptr)
+AUEProjectBaseCharacter::AUEProjectBaseCharacter(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer
+        .SetDefaultSubobjectClass<UUEProjectCharacterMovementComponent>(
+            ACharacter::CharacterMovementComponentName
+        )
+    )
 {
-	AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+    // Don't let controller override rotation
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
 
-	// Create the attribute set and make sure it's "owned" by the ASC, so it can replicate properly.
-    BaseAttributeSet = CreateDefaultSubobject<UUEProjectAttributeSet_CharacterBase>(TEXT("BaseAttributeSet"));
+    AbilitySystem = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
+
+    BaseAttributeSet = 
+        CreateDefaultSubobject<UUEProjectAttributeSet_CharacterBase>(TEXT("BaseAttributeSet"));
 
     // Register the attribute set with the ASC
     if (AbilitySystem && BaseAttributeSet)
@@ -29,4 +39,9 @@ UAbilitySystemComponent* AUEProjectBaseCharacter::GetAbilitySystem() const
 UUEProjectAttributeSet_CharacterBase* AUEProjectBaseCharacter::GetBaseAttributeSet() const
 {
 	return BaseAttributeSet;
+}
+
+UUEProjectCharacterMovementComponent* AUEProjectBaseCharacter::GetCustomMovementComponent() const
+{
+    return Cast<UUEProjectCharacterMovementComponent>(GetMovementComponent());
 }
