@@ -24,7 +24,7 @@ struct FUEProjectSTInstanceData_RunBehaviorTree
 	FInstancedPropertyBag InputParameters;
 
 	/** If true the tree will loop, if false it will only run once. */
-	UPROPERTY(EditAnywhere, Category = "Parameter")
+	UPROPERTY(EditAnywhere, Category = "Parameter", meta = (DisplayName = "Loop"))
 	bool bLoop = true;
 };
 

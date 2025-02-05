@@ -61,7 +61,7 @@ void FUEProjectSTTask_RunBehaviorTree::ExitState(FStateTreeExecutionContext& Con
     FInstanceDataType& InstanceData = Context.GetInstanceData(*this);
 
     AUEProjectAIController* const AIController = Cast<AUEProjectAIController>(Context.GetOwner());
-    if (!AIController) return EStateTreeRunStatus::Failed;
+    if (!AIController) return;
 
     UBehaviorTreeComponent* const BehaviorTreeComponent = 
 		Cast<UBehaviorTreeComponent>(AIController->GetBrainComponent());
