@@ -39,8 +39,6 @@ struct FUEProjectSTTask_RunBehaviorTree : public FStateTreeAITaskBase
 
 	using FInstanceDataType = FUEProjectSTInstanceData_RunBehaviorTree;
 
-public:
-
 	//////////////////////////////////////////////////////////////////////////
 	// FStateTreeNodeBase overrides
 
