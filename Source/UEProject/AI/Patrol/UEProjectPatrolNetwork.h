@@ -13,7 +13,7 @@ class USplineComponent;
  * Supports bidirectional movement, random point selection, and navmesh integration.
  * Can be placed in level and configured via editor or at runtime.
  */
-UCLASS(Blueprintable, Category = "AI|Patrol", meta = (DisplayName = "Patrol Network"))
+UCLASS(Blueprintable, Category = "AI | Patrol", meta = (DisplayName = "Patrol Network"))
 class AUEProjectPatrolNetwork : public AActor
 {
     GENERATED_BODY()

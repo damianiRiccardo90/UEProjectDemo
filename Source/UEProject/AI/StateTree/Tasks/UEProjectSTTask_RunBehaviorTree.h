@@ -6,7 +6,6 @@
 #include "UEProjectSTTask_RunBehaviorTree.generated.h"
 
 
-class AUEProjectAIController;
 class UBehaviorTree;
 class UBlackboardComponent;
 struct FInstancedPropertyBag;
@@ -15,10 +14,6 @@ USTRUCT()
 struct FUEProjectSTInstanceData_RunBehaviorTree
 {
 	GENERATED_BODY()
-
-	/** The AI controller that will run the tree. */
-	UPROPERTY(EditAnywhere, Category = "Context")
-	AUEProjectAIController* AIController = nullptr;
 
 	/** The behavior tree that will run. */
 	UPROPERTY(EditAnywhere, Category = "Parameter")
@@ -37,7 +32,7 @@ struct FUEProjectSTInstanceData_RunBehaviorTree
  * This task runs an a behavior tree, supports looping and also input parameters 
  * that will be stored on the blackboard.
  */
-USTRUCT(meta = (DisplayName = "Run Behavior Tree", Category = "AI|BehaviorTree"))
+USTRUCT(meta = (DisplayName = "Run Behavior Tree", Category = "AI | BehaviorTree"))
 struct FUEProjectSTTask_RunBehaviorTree : public FStateTreeAITaskBase
 {
 	GENERATED_BODY()

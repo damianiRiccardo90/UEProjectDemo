@@ -19,21 +19,21 @@ EStateTreeRunStatus FUEProjectSTTask_RunBehaviorTree::EnterState(
 {
 	FInstanceDataType& InstanceData = Context.GetInstanceData(*this);
 
-    if (!InstanceData.AIController || !InstanceData.BehaviorTree)
+    AUEProjectAIController* const AIController = Cast<AUEProjectAIController>(Context.GetOwner());
+    if (!AIController || !InstanceData.BehaviorTree)
     {
         return EStateTreeRunStatus::Failed;
     }
     
     UBlackboardComponent* BlackboardComponent = nullptr;
-    if (!InstanceData.AIController->UseBlackboard(
-            InstanceData.BehaviorTree->BlackboardAsset, BlackboardComponent))
+    if (!AIController->UseBlackboard(InstanceData.BehaviorTree->BlackboardAsset, BlackboardComponent))
     {
         return EStateTreeRunStatus::Failed;
     }
 
     SetBlackboardKeysFromPropertyBag(Context, *BlackboardComponent);
 
-	InstanceData.AIController->RunBehaviorTreeWithLoop(InstanceData.BehaviorTree, InstanceData.bLoop);
+	AIController->RunBehaviorTreeWithLoop(InstanceData.BehaviorTree, InstanceData.bLoop);
 
 	return EStateTreeRunStatus::Running;
 }
@@ -43,8 +43,11 @@ EStateTreeRunStatus FUEProjectSTTask_RunBehaviorTree::Tick(
 {
     FInstanceDataType& InstanceData = Context.GetInstanceData(*this);
 
+    AUEProjectAIController* const AIController = Cast<AUEProjectAIController>(Context.GetOwner());
+    if (!AIController) return EStateTreeRunStatus::Failed;
+
     UBehaviorTreeComponent* const BehaviorTreeComponent = 
-		Cast<UBehaviorTreeComponent>(InstanceData.AIController->GetBrainComponent());
+		Cast<UBehaviorTreeComponent>(AIController->GetBrainComponent());
 	if (!BehaviorTreeComponent) return EStateTreeRunStatus::Failed;
 
     if (!BehaviorTreeComponent->IsRunning()) return EStateTreeRunStatus::Succeeded;
@@ -57,8 +60,11 @@ void FUEProjectSTTask_RunBehaviorTree::ExitState(FStateTreeExecutionContext& Con
 {
     FInstanceDataType& InstanceData = Context.GetInstanceData(*this);
 
+    AUEProjectAIController* const AIController = Cast<AUEProjectAIController>(Context.GetOwner());
+    if (!AIController) return EStateTreeRunStatus::Failed;
+
     UBehaviorTreeComponent* const BehaviorTreeComponent = 
-		Cast<UBehaviorTreeComponent>(InstanceData.AIController->GetBrainComponent());
+		Cast<UBehaviorTreeComponent>(AIController->GetBrainComponent());
 	if (!BehaviorTreeComponent) return;
 
     if (BehaviorTreeComponent->IsRunning())
