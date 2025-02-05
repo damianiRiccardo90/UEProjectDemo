@@ -10,3 +10,7 @@ UE_DEFINE_GAMEPLAY_TAG_COMMENT(TAG_AIState_Patrol, "AIState.Patrol",
 							   "Tag for AI States: Patrol");
 UE_DEFINE_GAMEPLAY_TAG_COMMENT(TAG_AIState_Combat, "AIState.Combat", 
 							   "Tag for AI States: Combat");
+UE_DEFINE_GAMEPLAY_TAG_COMMENT(TAG_Ability_LightAttack, "Ability.LightAttack", 
+							   "Tag for Abilities: Light Attack");
+UE_DEFINE_GAMEPLAY_TAG_COMMENT(TAG_Ability_HeavyAttack, "Ability.HeavyAttack", 
+							   "Tag for Abilities: Heavy Attack");

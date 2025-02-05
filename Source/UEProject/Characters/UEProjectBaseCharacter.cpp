@@ -4,7 +4,10 @@
 #include <Components/CapsuleComponent.h>
 
 #include "UEProject/Characters/Movement/UEProjectCharacterMovementComponent.h"
+#include "UEProject/GAS/Abilities/UEProjectGameplayAbilitySet.h"
 #include "UEProject/GAS/Attributes/UEProjectAttributeSet_CharacterBase.h"
+#include "UEProject/GAS/Effects/UEProjectGameplayEffect_ApplyDamage.h"
+#include "UEProject/GAS/UEProjectGameplayTagsLibrary.h"
 
 
 AUEProjectBaseCharacter::AUEProjectBaseCharacter(const FObjectInitializer& ObjectInitializer)
@@ -13,6 +16,9 @@ AUEProjectBaseCharacter::AUEProjectBaseCharacter(const FObjectInitializer& Objec
             ACharacter::CharacterMovementComponentName
         )
     )
+    , AbilitySystem(nullptr)
+    , BaseAttributeSet(nullptr)
+    , DefaultAbilitySet(nullptr)
 {
     // Don't let controller override rotation
 	bUseControllerRotationPitch = false;
@@ -24,10 +30,32 @@ AUEProjectBaseCharacter::AUEProjectBaseCharacter(const FObjectInitializer& Objec
     BaseAttributeSet = 
         CreateDefaultSubobject<UUEProjectAttributeSet_CharacterBase>(TEXT("BaseAttributeSet"));
 
-    // Register the attribute set with the ASC
-    if (AbilitySystem && BaseAttributeSet)
+    if (AbilitySystem)
     {
+        // Register the attribute set with the ASC
         AbilitySystem->AddAttributeSetSubobject(BaseAttributeSet);
+
+        // Register callback for gameplay effects applied to itself
+        AbilitySystem->OnGameplayEffectAppliedDelegateToSelf.AddUObject(
+            this, &ThisClass::OnGameplayEffectApplied);
+    }
+}
+
+void AUEProjectBaseCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+
+    // Grant default abilities (only if the actor has the authority in a networked game)
+    if (HasAuthority() && AbilitySystem && DefaultAbilitySet)
+    {
+        for (const FGrantAbility& Grant : DefaultAbilitySet->GrantedAbilities)
+        {
+            if (Grant.AbilityClass)
+            {
+                const FGameplayAbilitySpec Spec(Grant.AbilityClass);
+                AbilitySystem->GiveAbility(Spec);
+            }
+        }
     }
 }
 
@@ -44,4 +72,21 @@ UUEProjectAttributeSet_CharacterBase* AUEProjectBaseCharacter::GetBaseAttributeS
 UUEProjectCharacterMovementComponent* AUEProjectBaseCharacter::GetCustomMovementComponent() const
 {
     return Cast<UUEProjectCharacterMovementComponent>(GetMovementComponent());
+}
+
+void AUEProjectBaseCharacter::OnGameplayEffectApplied(UAbilitySystemComponent* Source, 
+    const FGameplayEffectSpec& Spec, FActiveGameplayEffectHandle Handle)
+{
+    if (const UUEProjectGameplayEffect_ApplyDamage* DamageEffect = 
+            Cast<UUEProjectGameplayEffect_ApplyDamage>(Spec.Def))
+    {
+        if (Spec.GetDynamicAssetTags().HasTag(TAG_Ability_LightAttack))
+        {
+            PlayAnimMontage(DamageEffect->GetHitReactionMontage());
+        }
+        else if (Spec.GetDynamicAssetTags().HasTag(TAG_Ability_HeavyAttack))
+        {
+            PlayAnimMontage(DamageEffect->GetHitReactionMontage());
+        }
+    }
 }

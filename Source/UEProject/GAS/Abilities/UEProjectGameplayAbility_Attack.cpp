@@ -15,10 +15,31 @@ UUEProjectGameplayAbility_Attack::UUEProjectGameplayAbility_Attack(
     const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
     , AttackMontage(nullptr)
-    , AttackRange(200.f)
-    , AttackDamage(25.f)
+    , AttackRange(100.f)
+    , BaseAttackDamage(10.f)
+    , LightAttackDamageMultiplier(2.f)
+    , HeavyAttackDamageMultiplier(5.f)
     , DamageEffect(nullptr)
-{}
+    , AttackType(FGameplayTag::EmptyTag)
+{
+    const FGameplayTagContainer AbilityTagsContainer = 
+        FGameplayTagContainer::CreateFromArray(TArray<FGameplayTag>{ 
+            TAG_Ability_LightAttack, TAG_Ability_HeavyAttack 
+    });
+
+    SetAssetTags(AbilityTagsContainer);
+    BlockAbilitiesWithTag.AppendTags(AbilityTagsContainer);
+
+    FAbilityTriggerData LightAttackTrigger;
+    LightAttackTrigger.TriggerTag = TAG_Ability_LightAttack;
+    LightAttackTrigger.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+    AbilityTriggers.Add(LightAttackTrigger);
+
+    FAbilityTriggerData HeavyAttackTrigger;
+    HeavyAttackTrigger.TriggerTag = TAG_Ability_HeavyAttack;
+    HeavyAttackTrigger.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+    AbilityTriggers.Add(HeavyAttackTrigger);
+}
 
 bool UUEProjectGameplayAbility_Attack::CanActivateAbility( 
     const FGameplayAbilitySpecHandle Handle, 
@@ -56,8 +77,14 @@ void UUEProjectGameplayAbility_Attack::ActivateAbility(
         return;
     }
 
+    // Cache the event activation tag
+    if (TriggerEventData)
+    {
+        AttackType = TriggerEventData->EventTag;
+    }
+
     // Play the attack montage
-    if (AttackMontage && ActorInfo->AnimInstance.IsValid())
+    if (AttackMontage)
     {
         // Create a montage task to asynchronously play the montage
         UAbilityTask_PlayMontageAndWait* const MontageTask = 
@@ -78,10 +105,66 @@ void UUEProjectGameplayAbility_Attack::ActivateAbility(
     }
 }
 
+TArray<FHitResult> UUEProjectGameplayAbility_Attack::PerformAttackTrace(
+    const ACharacter* InstigatorCharacter) const
+{
+    // Find potential targets using a simple sphere trace
+
+    TArray<FHitResult> OutHits;
+
+    if (!InstigatorCharacter) return OutHits;
+
+    const FVector Start = InstigatorCharacter->GetActorLocation();
+    const FVector End = Start; // For a sphere, start and end are the same
+    const float Radius = AttackRange;
+
+    FCollisionQueryParams QueryParams;
+    QueryParams.AddIgnoredActor(InstigatorCharacter);
+
+    GetWorld()->SweepMultiByChannel( OutHits, Start, End, FQuat::Identity, 
+        ECC_Pawn, FCollisionShape::MakeSphere(Radius), QueryParams);
+
+    return OutHits;
+}
+
+void UUEProjectGameplayAbility_Attack::ApplyAttackDamageToTargets(
+    const TArray<FHitResult>& HitResults, const FGameplayAbilitySpec* CurrAbilitySpec)
+{
+    if (!CurrAbilitySpec) return;
+
+    UAbilitySystemComponent* const ASC = GetAbilitySystemComponentFromActorInfo();
+    if (!ASC) return;
+
+    for (const FHitResult& Hit : HitResults)
+    {
+        const AActor* const TargetActor = Hit.GetActor();
+        if (!TargetActor || TargetActor == GetAvatarActorFromActorInfo()) continue;
+
+        FGameplayEffectSpecHandle SpecHandle = 
+            ASC->MakeOutgoingSpec(DamageEffect, 1.0f, ASC->MakeEffectContext());
+        if (SpecHandle.IsValid())
+        {
+            SpecHandle.Data->SetSetByCallerMagnitude(TAG_Data_Damage, 
+                BaseAttackDamage * (AttackType == TAG_Ability_HeavyAttack ? 
+                    HeavyAttackDamageMultiplier : LightAttackDamageMultiplier));
+
+            SpecHandle.Data->AddDynamicAssetTag(AttackType);
+
+            if (UAbilitySystemComponent* const TargetASC =
+                    UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TargetActor))
+            {
+                TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+            }
+        }
+
+        // For single-target attack, just break if you only want the first valid
+        break;
+    }
+}
+
 void UUEProjectGameplayAbility_Attack::EndAbilityDirect()
 {
-    // Attempt to find a valid target within range
-    ACharacter* const AvatarCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo());
+    const ACharacter* const AvatarCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo());
     if (!AvatarCharacter)
     {
         EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), 
@@ -89,48 +172,19 @@ void UUEProjectGameplayAbility_Attack::EndAbilityDirect()
         return;
     }
 
-    // Find potential targets using a simple sphere trace
-    TArray<FHitResult> HitResults;
-    const FVector Start = AvatarCharacter->GetActorLocation();
-    const FVector End = Start; // For a sphere, start and end are the same
-    const float Radius = AttackRange;
-
-    // Sphere trace for Pawn channel
-    FCollisionQueryParams QueryParams;
-    QueryParams.AddIgnoredActor(AvatarCharacter);
-
-    const bool bHit = GetWorld()->SweepMultiByChannel(HitResults, Start, End, 
-        FQuat::Identity, ECC_Pawn, FCollisionShape::MakeSphere(Radius), QueryParams);
-
-    if (bHit)
+    const FGameplayAbilitySpec* const CurrAbilitySpec = GetCurrentAbilitySpec();
+    if (!CurrAbilitySpec)
     {
-        for (FHitResult& Hit : HitResults)
-        {
-            AActor* const TargetActor = Hit.GetActor();
-            if (TargetActor && TargetActor != AvatarCharacter)
-            {
-                if (UAbilitySystemComponent* const ASC = GetAbilitySystemComponentFromActorInfo())
-                {
-                    // Build the effect spec from our effect class
-                    FGameplayEffectSpecHandle SpecHandle = 
-                        ASC->MakeOutgoingSpec(DamageEffect, 1.0f, ASC->MakeEffectContext());
-                    if (SpecHandle.IsValid())
-                    {
-                        SpecHandle.Data->SetSetByCallerMagnitude(TAG_Data_Damage, AttackDamage);
-
-                        if (UAbilitySystemComponent* const TargetASC =
-                                UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TargetActor))
-                        {
-                            ASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
-                        }
-                    }
-                }
-
-                // For a single-target attack, break after the first valid target
-                break;
-            }
-        }
+        EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), 
+            true, false);
+        return;
     }
+
+    // Perform collision trace
+    const TArray<FHitResult> HitResults = PerformAttackTrace(AvatarCharacter);
+
+    // Compute the damage and apply it to victims
+    ApplyAttackDamageToTargets(HitResults, CurrAbilitySpec);
 
     EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), 
         true, false);

@@ -8,6 +8,7 @@
 UUEProjectGameplayEffect_ApplyDamage::UUEProjectGameplayEffect_ApplyDamage(
     const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
+    , HitReactionMontage(nullptr)
 {
     // Make this effect apply instantly
     DurationPolicy = EGameplayEffectDurationType::Instant;
@@ -27,4 +28,9 @@ UUEProjectGameplayEffect_ApplyDamage::UUEProjectGameplayEffect_ApplyDamage(
     // Attach the magnitude to the info and add the modifier.
     ModifierInfo.ModifierMagnitude = ModifierMagnitude;
     Modifiers.Add(ModifierInfo);
+}
+
+UAnimMontage* UUEProjectGameplayEffect_ApplyDamage::GetHitReactionMontage() const
+{
+    return HitReactionMontage;
 }

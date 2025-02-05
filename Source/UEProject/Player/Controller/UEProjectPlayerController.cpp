@@ -1,10 +1,14 @@
 #include "UEProjectPlayerController.h"
 
+#include <AbilitySystemComponent.h>
+#include <AbilitySystemGlobals.h>
 #include <EnhancedInputComponent.h>
 #include <EnhancedInputSubsystems.h>
 #include <GameFramework/Character.h>
 #include <InputActionValue.h>
 #include "Kismet/GameplayStatics.h"
+
+#include "UEProject/GAS/UEProjectGameplayTagsLibrary.h"
 
 
 AUEProjectPlayerController::AUEProjectPlayerController(const FObjectInitializer& ObjectInitializer)
@@ -13,6 +17,8 @@ AUEProjectPlayerController::AUEProjectPlayerController(const FObjectInitializer&
     , JumpAction(nullptr)
     , MoveAction(nullptr)
     , LookAction(nullptr)
+    , LightAttackAction(nullptr)
+    , HeavyAttackAction(nullptr)
 {}
 
 void AUEProjectPlayerController::OnPossess(APawn* InPawn)
@@ -38,19 +44,25 @@ void AUEProjectPlayerController::SetupInputComponent()
         Cast<UEnhancedInputComponent>(InputComponent);
     if (!EnhancedInputComponent) return;
 
-    // Jumping
+    // Jump
     EnhancedInputComponent->BindAction(
         JumpAction, ETriggerEvent::Started, this, &ThisClass::Jump);
     EnhancedInputComponent->BindAction(
         JumpAction, ETriggerEvent::Completed, this, &ThisClass::StopJumping);
 
-    // Moving
+    // Move
     EnhancedInputComponent->BindAction(
         MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
 
-    // Looking
+    // Look
     EnhancedInputComponent->BindAction(
         LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
+
+    // Attack
+    EnhancedInputComponent->BindAction(
+        LightAttackAction, ETriggerEvent::Started, this, &ThisClass::LightAttack);
+    EnhancedInputComponent->BindAction(
+        HeavyAttackAction, ETriggerEvent::Started, this, &ThisClass::HeavyAttack);
 }
 
 void AUEProjectPlayerController::Jump(const FInputActionValue& Value)
@@ -98,4 +110,56 @@ void AUEProjectPlayerController::Look(const FInputActionValue& Value)
     // Add yaw and pitch input
     AddYawInput(LookAxisVector.X);
     AddPitchInput(LookAxisVector.Y);
+}
+
+void AUEProjectPlayerController::LightAttack(const FInputActionValue& Value)
+{
+    APawn* const CurrentPawn = GetPawn();
+    if (!CurrentPawn) return;
+
+    if (UAbilitySystemComponent* const ASC = 
+            UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(CurrentPawn))
+    {
+        FGameplayEventData EventData;
+        EventData.EventTag = TAG_Ability_LightAttack;
+        EventData.Instigator = CurrentPawn;
+        EventData.Target = CurrentPawn;
+
+        ASC->HandleGameplayEvent(TAG_Ability_LightAttack, &EventData);
+    }
+    /*
+    FGameplayEventData EventData;
+    EventData.EventTag = TAG_Ability_LightAttack;
+    EventData.Instigator = CurrentPawn;
+    EventData.Target = CurrentPawn;
+
+    UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+        CurrentPawn, TAG_Ability_LightAttack, EventData);
+    */
+}
+
+void AUEProjectPlayerController::HeavyAttack(const FInputActionValue& Value)
+{
+    APawn* const CurrentPawn = GetPawn();
+    if (!CurrentPawn) return;
+
+    if (UAbilitySystemComponent* const ASC = 
+            UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(CurrentPawn))
+    {
+        FGameplayEventData EventData;
+        EventData.EventTag = TAG_Ability_HeavyAttack;
+        EventData.Instigator = CurrentPawn;
+        EventData.Target = CurrentPawn;
+
+        ASC->HandleGameplayEvent(TAG_Ability_HeavyAttack, &EventData);
+    }
+    /*
+    FGameplayEventData EventData;
+    EventData.EventTag = TAG_Ability_HeavyAttack;
+    EventData.Instigator = CurrentPawn;
+    EventData.Target = CurrentPawn;
+
+    UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+        CurrentPawn, TAG_Ability_HeavyAttack, EventData);
+    */
 }

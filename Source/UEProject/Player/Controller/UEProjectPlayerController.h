@@ -34,6 +34,8 @@ protected:
     void StopJumping(const FInputActionValue& Value);
     void Move(const FInputActionValue& Value);
     void Look(const FInputActionValue& Value);
+    void LightAttack(const FInputActionValue& Value);
+    void HeavyAttack(const FInputActionValue& Value);
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Controller")
     UInputMappingContext* DefaultMappingContext;
@@ -46,4 +48,10 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Controller")
     UInputAction* LookAction;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Controller")
+    UInputAction* LightAttackAction;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Controller")
+    UInputAction* HeavyAttackAction;
 };

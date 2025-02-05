@@ -41,14 +41,17 @@ public:
     // UGameplayAbility overrides
     //////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Performs the final logic for the ability, such as damaging the target,
-     * before calling EndAbility() to wrap up.
-     */
+protected:
+
+    TArray<FHitResult> PerformAttackTrace(const ACharacter* InstigatorCharacter) const;
+
+    void ApplyAttackDamageToTargets(
+        const TArray<FHitResult>& HitResults, const FGameplayAbilitySpec* CurrAbilitySpec);
+
+    // Performs the final logic for the ability, such as damaging the target,
+    // before calling EndAbility() to wrap up
     UFUNCTION()
     void EndAbilityDirect();
-
-protected:
 
     /** Animation montage to play when the ability is activated */
     UPROPERTY(EditDefaultsOnly, Category = "Gameplay Ability")
@@ -60,9 +63,22 @@ protected:
 
     /** Base damage to apply when hitting a target */
     UPROPERTY(EditDefaultsOnly, Category = "Gameplay Ability")
-    float AttackDamage;
+    float BaseAttackDamage;
+
+    /** Damage multiplier to apply to the base attack damage for light attacks. */
+    UPROPERTY(EditDefaultsOnly, Category = "Gameplay Ability")
+    float LightAttackDamageMultiplier;
+
+    /** Damage multiplier to apply to the base attack damage for heavy attacks. */
+    UPROPERTY(EditDefaultsOnly, Category = "Gameplay Ability")
+    float HeavyAttackDamageMultiplier;
 
     /** GameplayEffect to apply for dealing damage to the target. */
     UPROPERTY(EditDefaultsOnly, Category = "Gameplay Ability")
     TSubclassOf<UGameplayEffect> DamageEffect;
+
+private:
+
+    // Tag that is sent along with the gameplay event that triggers the ability
+    FGameplayTag AttackType;
 };
