@@ -2,6 +2,7 @@
 
 #include <CoreMinimal.h>
 #include <GameFramework/PlayerController.h>
+#include <GenericTeamAgentInterface.h>
 
 #include "UEProjectPlayerController.generated.h"
 
@@ -11,13 +12,23 @@ class UInputMappingContext;
 struct FInputActionValue;
 
 UCLASS()
-class AUEProjectPlayerController : public APlayerController
+class AUEProjectPlayerController : public APlayerController, public IGenericTeamAgentInterface
 {
     GENERATED_BODY()
 
 public:
 
     AUEProjectPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+    //////////////////////////////////////////////////////////////////////////
+    // IGenericTeamAgentInterface overrides
+
+	virtual FGenericTeamId GetGenericTeamId() const override;
+
+    virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+
+    // IGenericTeamAgentInterface overrides
+    //////////////////////////////////////////////////////////////////////////
 
 protected:
 

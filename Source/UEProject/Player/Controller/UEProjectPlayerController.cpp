@@ -21,6 +21,25 @@ AUEProjectPlayerController::AUEProjectPlayerController(const FObjectInitializer&
     , HeavyAttackAction(nullptr)
 {}
 
+FGenericTeamId AUEProjectPlayerController::GetGenericTeamId() const
+{
+    return 0;
+}
+
+ETeamAttitude::Type AUEProjectPlayerController::GetTeamAttitudeTowards(const AActor& Other) const
+{
+	const IGenericTeamAgentInterface* const OtherTeamAgent = 
+        Cast<IGenericTeamAgentInterface>(&Other);
+    if (!OtherTeamAgent) return ETeamAttitude::Neutral;
+
+    const uint8 OtherAgentTeamID = OtherTeamAgent->GetGenericTeamId().GetId();
+
+    if (OtherAgentTeamID == 0) return ETeamAttitude::Friendly;
+    if (OtherAgentTeamID == 1) return ETeamAttitude::Hostile;
+
+    return ETeamAttitude::Neutral;
+}
+
 void AUEProjectPlayerController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);

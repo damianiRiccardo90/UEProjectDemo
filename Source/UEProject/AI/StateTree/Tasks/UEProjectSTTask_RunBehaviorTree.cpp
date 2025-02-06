@@ -14,6 +14,45 @@ const UStruct* FUEProjectSTTask_RunBehaviorTree::GetInstanceDataType() const
 	return FInstanceDataType::StaticStruct();
 }
 
+#if WITH_EDITOR
+FText FUEProjectSTTask_RunBehaviorTree::GetDescription(
+    const FGuid& ID, 
+    FStateTreeDataView InstanceDataView, 
+    const IStateTreeBindingLookup& BindingLookup, 
+    EStateTreeNodeFormatting Formatting /*= EStateTreeNodeFormatting::Text */
+) const
+{
+    const FInstanceDataType* const InstanceData = 
+        InstanceDataView.GetPtr<FInstanceDataType>();
+    check(InstanceData);
+
+    const FStateTreePropertyPath BehaviorPropertyPath = FStateTreePropertyPath(
+        ID, GET_MEMBER_NAME_CHECKED(FInstanceDataType, BehaviorTree));
+
+    FText BehaviorValue = 
+        BindingLookup.GetBindingSourceDisplayName(BehaviorPropertyPath, Formatting);
+
+    if (BehaviorValue.IsEmpty())
+    {
+        BehaviorValue = FText::FromString(GetNameSafe(InstanceData->BehaviorTree));
+    }
+
+    if (Formatting == EStateTreeNodeFormatting::RichText)
+    {
+        return FText::Format(NSLOCTEXT("StateTree", "RunBehaviorTreeRichText", 
+            "<b>Run Behavior Tree:</> {0}"), BehaviorValue);
+    }
+
+    return FText::Format(NSLOCTEXT("StateTree", "RunBehaviorTreeText", 
+        "Run Behavior Tree: {0}"), BehaviorValue);
+}
+
+FName FUEProjectSTTask_RunBehaviorTree::GetIconName() const
+{
+    return FName("StateTreeEditorStyle|Node.Task");
+}
+#endif // WITH_EDITOR
+
 EStateTreeRunStatus FUEProjectSTTask_RunBehaviorTree::EnterState(
 	FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) const
 {

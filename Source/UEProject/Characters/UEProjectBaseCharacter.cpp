@@ -59,9 +59,47 @@ void AUEProjectBaseCharacter::BeginPlay()
     }
 }
 
-UAbilitySystemComponent* AUEProjectBaseCharacter::GetAbilitySystem() const
+UAbilitySystemComponent* AUEProjectBaseCharacter::GetAbilitySystemComponent() const
 {
     return AbilitySystem;
+}
+
+void AUEProjectBaseCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+    if (AbilitySystem)
+    {
+        AbilitySystem->GetOwnedGameplayTags(TagContainer);
+    }
+}
+
+bool AUEProjectBaseCharacter::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
+{
+    if (AbilitySystem)
+    {
+        return AbilitySystem->HasMatchingGameplayTag(TagToCheck);
+    }
+
+    return false;
+}
+
+bool AUEProjectBaseCharacter::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+    if (AbilitySystem)
+    {
+        return AbilitySystem->HasAllMatchingGameplayTags(TagContainer);
+    }
+
+    return false;
+}
+
+bool AUEProjectBaseCharacter::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+    if (AbilitySystem)
+    {
+        return AbilitySystem->HasAnyMatchingGameplayTags(TagContainer);
+    }
+
+    return false;
 }
 
 UUEProjectAttributeSet_CharacterBase* AUEProjectBaseCharacter::GetBaseAttributeSet() const

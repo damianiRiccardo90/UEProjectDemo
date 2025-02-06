@@ -1,43 +1,40 @@
 #pragma once
 
 #include <CoreMinimal.h>
+#include <GameplayTagContainer.h>
 #include <Tasks/StateTreeAITask.h>
 
-#include "UEProjectSTTask_RunBehaviorTree.generated.h"
+#include "UEProjectSTTask_ApplyTag.generated.h"
 
 
-class UBehaviorTree;
-class UBlackboardComponent;
-struct FInstancedPropertyBag;
-
+/** Instance data struct for ApplyTag task. */
 USTRUCT()
-struct FUEProjectSTInstanceData_RunBehaviorTree
+struct FUEProjectSTInstanceData_ApplyTag
 {
 	GENERATED_BODY()
 
-	/** The behavior tree that will run. */
+	/** The gameplay tag we want to set or remove. */
 	UPROPERTY(EditAnywhere, Category = "Parameter")
-	UBehaviorTree* BehaviorTree = nullptr;
+	FGameplayTag GameplayTag = FGameplayTag::EmptyTag;
 
-	/** Input parameters that will end up in the blackboard. */
-	UPROPERTY(EditAnywhere, Category = "Parameter")
-	FInstancedPropertyBag InputParameters;
-
-	/** If true the tree will loop, if false it will only run once. */
-	UPROPERTY(EditAnywhere, Category = "Parameter", meta = (DisplayName = "Loop"))
-	bool bLoop = true;
+	/**
+	 * If false, we add the tag on Enter and remove it on Exit.
+	 * If true, we remove the tag on Enter and add it on Exit.
+	 */
+	UPROPERTY(EditAnywhere, Category = "Parameter", meta = (DisplayName = "Invert Behavior"))
+	bool bInvertBehavior = false;
 };
 
 /**
- * This task runs an a behavior tree, supports looping and also input parameters 
- * that will be stored on the blackboard.
+ * This State Tree task adds (or removes) a gameplay tag to on state Enter, 
+ * and then reverts that change on state Exit.
  */
-USTRUCT(meta = (DisplayName = "Run Behavior Tree", Category = "AI | BehaviorTree"))
-struct FUEProjectSTTask_RunBehaviorTree : public FStateTreeAITaskBase
+USTRUCT(meta = (DisplayName = "Apply Tag", Category = "AI | GAS"))
+struct FUEProjectSTTask_ApplyTag : public FStateTreeAITaskBase
 {
 	GENERATED_BODY()
 
-	using FInstanceDataType = FUEProjectSTInstanceData_RunBehaviorTree;
+	using FInstanceDataType = FUEProjectSTInstanceData_ApplyTag;
 
 	//////////////////////////////////////////////////////////////////////////
 	// FStateTreeNodeBase overrides
@@ -64,17 +61,9 @@ struct FUEProjectSTTask_RunBehaviorTree : public FStateTreeAITaskBase
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, 
 		const FStateTreeTransitionResult& Transition) const override;
 
-	virtual EStateTreeRunStatus Tick(FStateTreeExecutionContext& Context, 
-		const float DeltaTime) const override;
-
 	virtual void ExitState(FStateTreeExecutionContext& Context,
 		const FStateTreeTransitionResult& Transition) const override;
 
 	// FStateTreeTaskBase overrides
 	//////////////////////////////////////////////////////////////////////////
-
-private:
-
-	void SetBlackboardKeysFromPropertyBag(FStateTreeExecutionContext& Context, 
-		UBlackboardComponent& BlackboardComponent) const;
 };
